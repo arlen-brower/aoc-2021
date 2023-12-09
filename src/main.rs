@@ -1,0 +1,95 @@
+// From:
+// https://github.com/tymscar/Advent-Of-Code/blob/master/2023/rust/src/main.rs
+use std::time::Instant;
+use std::vec;
+
+mod common;
+mod day01;
+
+fn format_duration(duration: std::time::Duration) -> String {
+    if duration.as_micros() < 1_000 {
+        (duration.as_micros().to_string() + " μs").to_string()
+    } else if duration.as_micros() < 1_000_000 {
+        (duration.as_millis().to_string() + " ms").to_string()
+    } else {
+        (duration.as_secs().to_string() + " s ").to_string()
+    }
+}
+
+fn print_table(days: Vec<fn() -> common::DayData>) {
+    let max_name_len = days.iter().map(|f| f().name.len()).max().unwrap();
+    let max_part1_len = days.iter().map(|f| f().part1_answer.len()).max().unwrap();
+    let max_part2_len = days.iter().map(|f| f().part2_answer.len()).max().unwrap();
+    let max_time_len = days
+        .iter()
+        .map(|f| {
+            let start = Instant::now();
+            f();
+            let duration = start.elapsed();
+            format_duration(duration).len()
+        })
+        .max()
+        .unwrap();
+
+    let part1_header_len = max_part1_len + 5;
+    let part2_header_len = max_part2_len + 5;
+
+    let max_total_len = max_name_len + part1_header_len + part2_header_len + max_time_len + 7;
+
+    println!("╔{}╗", "═".repeat(max_total_len + 4));
+    println!("║ {:^max_total_len$} ║", "🦀 Advent of Code 2021 🦀");
+    println!(
+        "╠{}╦{}╦{}╦{}╣",
+        "═".repeat(max_name_len + 2),
+        "═".repeat(part1_header_len + 2),
+        "═".repeat(part2_header_len + 2),
+        "═".repeat(max_time_len + 2)
+    );
+    println!(
+        "║ {:max_name_len$} ║ {:part1_header_len$} ║ {:part2_header_len$} ║ {:max_time_len$} ║",
+        "Day", "Part 1", "Part 2", "Time"
+    );
+    println!(
+        "╠{}╬{}╦{}╬{}╦{}╬{}╣",
+        "═".repeat(max_name_len + 2),
+        "═".repeat(max_part1_len + 2),
+        "═".repeat(4),
+        "═".repeat(max_part2_len + 2),
+        "═".repeat(4),
+        "═".repeat(max_time_len + 2)
+    );
+
+    for day in days {
+        let start = Instant::now();
+        let result = day();
+        let duration = start.elapsed();
+        let part1_symbol = if result.part1_correct { "✅" } else { "❌" };
+        let part2_symbol = if result.part2_correct { "✅" } else { "❌" };
+
+        println!(
+            "║ {:max_name_len$} ║ {:max_part1_len$} ║ {} ║ {:max_part2_len$} ║ {} ║ {:>max_time_len$} ║",
+            result.name,
+            result.part1_answer,
+            part1_symbol,
+            result.part2_answer,
+            part2_symbol,
+            format_duration(duration),
+        );
+    }
+
+    println!(
+        "╚{}╩{}╩{}╩{}╩{}╩{}╝",
+        "═".repeat(max_name_len + 2),
+        "═".repeat(max_part1_len + 2),
+        "═".repeat(4),
+        "═".repeat(max_part2_len + 2),
+        "═".repeat(4),
+        "═".repeat(max_time_len + 2)
+    );
+}
+
+pub fn main() {
+    let days: Vec<fn() -> common::DayData> = vec![day01::solve];
+
+    print_table(days);
+}
