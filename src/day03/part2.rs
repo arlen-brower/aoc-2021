@@ -1,12 +1,11 @@
-fn filter_by<F>(input: Vec<&str>, n: usize, f: F) -> &str
+fn filter_by<F>(input: Vec<&str>, n: usize, f: F) -> i32
 where
     F: Fn(i32, i32) -> char,
 {
     if input.len() == 1 {
-        return input.first().unwrap();
+        return i32::from_str_radix(input.first().unwrap(), 2).unwrap();
     }
 
-    let criteria: char;
     let mut zero_count = 0;
     let mut one_count = 0;
 
@@ -19,6 +18,7 @@ where
         }
     }
 
+    let criteria: char;
     criteria = f(zero_count, one_count);
 
     let filtered: Vec<&str> = input
@@ -29,10 +29,8 @@ where
 }
 
 pub fn solve(input: &str) -> String {
-    let oxy = filter_by(input.lines().collect::<Vec<&str>>(), 0, oxygen_criteria);
-    let scrubber = filter_by(input.lines().collect::<Vec<&str>>(), 0, scrubber_criteria);
-    let i_oxy = i32::from_str_radix(oxy, 2).unwrap();
-    let i_scr = i32::from_str_radix(scrubber, 2).unwrap();
+    let i_oxy = filter_by(input.lines().collect::<Vec<&str>>(), 0, oxygen_criteria);
+    let i_scr = filter_by(input.lines().collect::<Vec<&str>>(), 0, scrubber_criteria);
 
     (i_oxy * i_scr).to_string()
 }
