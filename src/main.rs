@@ -5,6 +5,8 @@ use std::vec;
 
 mod common;
 mod day01;
+mod day02;
+mod day03;
 
 fn format_duration(duration: std::time::Duration) -> String {
     if duration.as_micros() < 1_000 {
@@ -89,7 +91,7 @@ fn print_table(days: Vec<fn() -> common::DayData>) {
 }
 
 pub fn main() {
-    let days: Vec<fn() -> common::DayData> = vec![day01::solve];
+    let days: Vec<fn() -> common::DayData> = vec![day01::solve, day02::solve, day03::solve];
 
     print_table(days);
 }
